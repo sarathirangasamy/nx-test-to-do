@@ -13,7 +13,7 @@ export class TodoService {
     });
   }
 
-  async getTodoList(skip: number, take: number) {
+  async getTodoList(take: number, skip: number) {
     return await this.prisma.todo.findMany({
       where: {
         archived: false,
