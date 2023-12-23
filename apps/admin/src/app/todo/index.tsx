@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowLeft,
   faArrowRight,
   faPencil,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import { environment } from '../../environments/environments';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
+import React, { useState } from 'react';
+
+import { environment } from '../../environments/environments';
+
 interface PropType {
   todoDetailsInfo: string[];
   page: number;
@@ -21,15 +24,27 @@ export const TodoList: React.FC<PropType> = ({
   setPage,
   fetchData,
 }) => {
+  const [editMode, setEditMode] = useState<string | null>(null);
+  const [editedValue, setEditedValue] = useState<string>('');
+
   const removeTodo = (id: string) => {
     axios
       .get(`${environment?.port}/delete-todo/${id}`)
-      .then((response) => {
-        fetchData();
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+      .then(() => fetchData())
+      .catch((error) => console.error('Error:', error));
+  };
+
+  const editTodo = (todo: any) => {
+    setEditMode(todo.id);
+    setEditedValue(todo.name);
+  };
+
+  const saveEditedTodo = (id: string) => {
+    axios
+      .post(`${environment?.port}/update-todo/${id}`, { name: editedValue })
+      .then(() => fetchData())
+      .catch((error) => console.error('Error:', error));
+    setEditMode(null);
   };
 
   return (
@@ -37,21 +52,38 @@ export const TodoList: React.FC<PropType> = ({
       <div className="list-container">
         {todoDetailsInfo?.map((todo: any, index) => (
           <div className="to-do-item" key={index}>
-            {todo?.name.toUpperCase()}
-
-            <FontAwesomeIcon
-              icon={faTrashCan}
-              color="red"
-              className="icon-align-right"
-              onClick={() => removeTodo(todo?.id)}
-            />
-
-            <FontAwesomeIcon
-              icon={faPencil}
-              color="#87CEEB"
-              className="icon-align-right"
-              onClick={() => removeTodo(todo?.id)}
-            />
+            {editMode === todo.id ? (
+              <>
+                <input
+                  type="text"
+                  className="custom-input"
+                  value={editedValue}
+                  onChange={(e) => setEditedValue(e.target.value)}
+                />
+                <button
+                  className="custom-add-btn"
+                  onClick={() => saveEditedTodo(todo.id)}
+                >
+                  Save
+                </button>
+              </>
+            ) : (
+              <>
+                {todo?.name.toUpperCase()}
+                <FontAwesomeIcon
+                  icon={faTrashCan}
+                  color="red"
+                  className="icon-align-right"
+                  onClick={() => removeTodo(todo?.id)}
+                />
+                <FontAwesomeIcon
+                  icon={faPencil}
+                  color="#87CEEB"
+                  className="icon-align-right"
+                  onClick={() => editTodo(todo)}
+                />
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -65,7 +97,11 @@ export const TodoList: React.FC<PropType> = ({
         </button>
         <span className="page-text"> {page}</span>
         <button
-          className="pagination-btn"
+          className={`${
+            todoDetailsInfo?.length < 5
+              ? 'pagination-btn-disabled'
+              : 'pagination-btn'
+          }`}
           disabled={todoDetailsInfo?.length < 5 ? true : false}
           onClick={() => setPage((prevPage) => prevPage + 1)}
         >

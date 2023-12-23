@@ -19,9 +19,9 @@ export class TodoController {
     return this.toDoService.deleteTodo(id);
   }
 
-  @Post('update-todo')
-  async updateTodo(@Body() data) {
-    return this.toDoService.updateTodo(data?.id, data?.name);
+  @Post('update-todo/:id')
+  async updateTodo(@Param('id') id: string, @Body() data) {
+    return this.toDoService.updateTodo(id, data?.name);
   }
 
   @Post('get-all-todo-list')
