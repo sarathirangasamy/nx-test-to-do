@@ -95,7 +95,7 @@ export const TodoList: React.FC<PropType> = ({
         >
           <FontAwesomeIcon icon={faArrowLeft} /> Previous
         </button>
-        <span className="page-text"> {page}</span>
+        <span className="page-text page-number-custom"> {page}</span>
         <button
           className={`${
             todoDetailsInfo?.length < 5
