@@ -40,6 +40,7 @@ export const TodoList: React.FC<PropType> = ({
   };
 
   const saveEditedTodo = (id: string) => {
+    if (editedValue === '') return alert('Please enter value');
     axios
       .post(`${environment?.port}/update-todo/${id}`, { name: editedValue })
       .then(() => fetchData())
