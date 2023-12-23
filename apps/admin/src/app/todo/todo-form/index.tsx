@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import './style.less';
+
+import { config, environment } from 'apps/admin/src/environments/environments';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+
 import { TodoList } from '..';
-import { config, environment } from 'apps/admin/src/environments/environments';
-import './style.less';
 
 export const TodoForm: React.FC = () => {
   const [todoDetailsInfo, setTodoDetailsInfo] = useState<string[]>([]);
@@ -37,7 +39,7 @@ export const TodoForm: React.FC = () => {
   };
 
   const addTodo = async () => {
-    if (todoValue.trim() === '') return;
+    if (todoValue === '') return alert('Please enter to do name');
     axios
       .post(`${environment?.port}/create`, { name: todoValue }, config)
       .then((response) => {
@@ -48,12 +50,6 @@ export const TodoForm: React.FC = () => {
         console.error('Error:', error);
       });
   };
-
-  // const removeTodo = (index: number) => {
-  //   const updatedTasks = [...todoDetailsInfo];
-  //   updatedTasks.splice(index, 1);
-  //   setTodoDetailsInfo(updatedTasks);
-  // };
 
   return (
     <div className="todo-container">
@@ -67,7 +63,9 @@ export const TodoForm: React.FC = () => {
           onChange={(e) => setTodoValue(e.target.value)}
         />
         <button
-          className="custom-add-btn"
+          className={`${
+            todoValue ? 'custom-add-btn' : 'custom-add-btn-disabled'
+          }`}
           disabled={todoValue ? false : true}
           onClick={addTodo}
         >
@@ -80,6 +78,7 @@ export const TodoForm: React.FC = () => {
         todoDetailsInfo={todoDetailsInfo}
         page={page}
         setPage={setPage}
+        fetchData={fetchData}
       />
     </div>
   );

@@ -14,6 +14,11 @@ export class TodoController {
     return this.toDoService.getTodo(id);
   }
 
+  @Get('delete-todo/:id')
+  deleteTodo(@Param('id') id: string) {
+    return this.toDoService.deleteTodo(id);
+  }
+
   @Post('update-todo')
   async updateTodo(@Body() data) {
     return this.toDoService.updateTodo(data?.id, data?.name);
